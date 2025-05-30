@@ -4,7 +4,6 @@ on:
     branches:
       - prod
 
-
 jobs:
   deploy-app:
     runs-on: ubuntu-latest
@@ -33,3 +32,19 @@ jobs:
           source: "./dist/*"
           target: "/var/www/html"
           strip_components:  1
+      - name: set the ubuntu user as the owner of the /var/www/html directory for unbuntu 24+
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo chown -R ubuntu /var/www/html
+      - name: set the root user back as the owner of the /var/www/html directory for unbuntu 24+
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER_NAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            sudo chown -R root /var/www/html
